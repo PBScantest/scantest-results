@@ -1,0 +1,12 @@
+{
+  "name": "scantest-secure",
+  "version": "1.0.0",
+  "description": "Scantest Results - Secured Version",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
