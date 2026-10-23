@@ -188,7 +188,7 @@
             justify-content: center;
             align-items: center;
             /* Transition fluide de 120 secondes (2 minutes) */
-            transition: backdrop-filter 120s linear, -webkit-backdrop-filter 120s linear, background-color 120s linear;
+            transition: backdrop-filter 5s linear, -webkit-backdrop-filter 5s linear, background-color 5s linear;
         }
 
         /* État final : Flou complet et bloque les clics sur le fond */
@@ -213,7 +213,7 @@
             transform: scale(0.9);
             pointer-events: none;
             /* Apparition en fondu pendant que le flou s'installe */
-            transition: opacity 120s ease-in, transform 120s ease-in;
+            transition: opacity 5s ease-in, transform 5s ease-in;
         }
 
         #blur-overlay.active .paywall-card {
@@ -759,18 +759,19 @@ document.getElementById('user-input').addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !isProcessing) handleUserMessage(); 
 });
 
+
+
 function lancerAnimation() {
     for (let i = 1; i <= 2; i++) {
         const v = userDisplayedScores[i].valeur;
         setTimeout(() => { 
-            document.getElementById(`meter${i}`).style.width = (v * 100 / 20) + "%"; 
+            const meter = document.getElementById(`meter${i}`);
+            if (meter) meter.style.width = (v * 100 / 20) + "%"; 
         }, 100 * i);
     }
 
-    // Cela simule un clic sur le premier élément pour l'ouvrir et afficher le texte
     handleSelection(0);
 }
-
 
 const video = document.getElementById('intro-video');
 if (video) {
@@ -782,27 +783,27 @@ if (video) {
     lancerAnimation(); 
 }
 
-
+// ===== ANIMATION DE FLOUL / PAYWALL =====
 function programmerFlouProgressif() {
-    // 3 minutes d'attente = 180 000 ms
-    const DELAI_ATTENTE = 3 * 60 * 1000; 
+    // Mis à 5 secondes (5000 ms) pour tester immédiatement. 
+    // Remettez à (3 * 60 * 1000) plus tard pour 3 minutes.
+    const DELAI_ATTENTE = 1 * 60 * 1000; 
 
     setTimeout(() => {
         const overlay = document.getElementById('blur-overlay');
         if (overlay) {
-            // Déclenche la transition CSS de 2 minutes (120s)
             overlay.classList.add('active');
+            console.log("Effet de flou activé !");
+        } else {
+            console.error("Élément #blur-overlay introuvable !");
         }
     }, DELAI_ATTENTE);
 }
 
-// Lancer le compte à rebours dès que la page ou l'intro est chargée
-const originalLancerAnimation = lancerAnimation;
-lancerAnimation = function() {
-    originalLancerAnimation();
+// Lancer le compte à rebours dès que la page s'initialise
+window.addEventListener('load', () => {
     programmerFlouProgressif();
-};
-
+});
 </script>
 </body>
 </html>
