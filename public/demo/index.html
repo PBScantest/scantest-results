@@ -171,6 +171,89 @@
             }
             @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         }
+        
+        /* Superposition pour l'effet de flou */
+        #blur-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            background: rgba(255, 255, 255, 0);
+            pointer-events: none; /* Laisse interagir avec la page au début */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Transition fluide de 120 secondes (2 minutes) */
+            transition: backdrop-filter 120s linear, -webkit-backdrop-filter 120s linear, background-color 120s linear;
+        }
+
+        /* État final : Flou complet et bloque les clics sur le fond */
+        #blur-overlay.active {
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.75);
+            pointer-events: auto; /* Bloque les interactions avec le site */
+        }
+
+        /* Modal / Carte centrale */
+        .paywall-card {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+            /* Apparition en fondu pendant que le flou s'installe */
+            transition: opacity 120s ease-in, transform 120s ease-in;
+        }
+
+        #blur-overlay.active .paywall-card {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .paywall-card h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .paywall-card p {
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .btn-paywall {
+            background: #68F787;
+            border: none;
+            padding: 16px 25px;
+            border-radius: 16px;
+            color: #1a365d;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(104, 247, 135, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn-paywall:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(104, 247, 135, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -221,6 +304,16 @@
         </div>
     </div>
 
+    <!-- Overlay de verrouillage / flou -->
+    <div id="blur-overlay">
+        <div class="paywall-card">
+            <h2>🔒 Débloquer mon test premium</h2>
+            <p>Votre temps de lecture découverte est écoulé. Débloquez l'accès complet pour découvrir l'intégralité de vos 11 tendances et votre analyse détaillée par l'IA.</p>
+            <button class="btn-paywall" onclick="goToPayment()">
+                💳 Débloquer mes résultats
+            </button>
+        </div>
+    </div>
 <script>
 const API_ENDPOINT = '/api/chat_free';
 let chatContext = [];
@@ -678,6 +771,7 @@ function lancerAnimation() {
     handleSelection(0);
 }
 
+
 const video = document.getElementById('intro-video');
 if (video) {
     video.onended = () => { 
@@ -687,6 +781,28 @@ if (video) {
 } else { 
     lancerAnimation(); 
 }
+
+
+function programmerFlouProgressif() {
+    // 3 minutes d'attente = 180 000 ms
+    const DELAI_ATTENTE = 3 * 60 * 1000; 
+
+    setTimeout(() => {
+        const overlay = document.getElementById('blur-overlay');
+        if (overlay) {
+            // Déclenche la transition CSS de 2 minutes (120s)
+            overlay.classList.add('active');
+        }
+    }, DELAI_ATTENTE);
+}
+
+// Lancer le compte à rebours dès que la page ou l'intro est chargée
+const originalLancerAnimation = lancerAnimation;
+lancerAnimation = function() {
+    originalLancerAnimation();
+    programmerFlouProgressif();
+};
+
 </script>
 </body>
 </html>
